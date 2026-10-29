@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AccessiCheck helps developers find common accessibility issues in HTML and check color contrast.">
+  <title>AccessiCheck | Web Accessibility Checker</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="AccessiCheck home">
+      <span class="brand-mark" aria-hidden="true">A</span>
+      <span>Accessi<span class="brand-accent">Check</span></span>
+    </a>
+
+    <span class="topbar-label">
+      <span class="status-dot" aria-hidden="true"></span>
+      Frontend developer toolkit
+    </span>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="eyebrow">BUILD FOR EVERYONE</div>
+      <h1>Make the web more <span>accessible.</span></h1>
+      <p>
+        Check your HTML for common accessibility issues, understand
+        what needs fixing, and build better experiences for everyone.
+      </p>
+      <div class="hero-tags">
+        <span>HTML Audit</span>
+        <span>WCAG Contrast</span>
+        <span>Actionable Tips</span>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <div class="panel editor-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="section-kicker">STEP 01</p>
+            <h2>Inspect your HTML</h2>
+            <p class="muted">Paste a small HTML snippet to start an audit.</p>
+          </div>
+          <span class="heading-symbol" aria-hidden="true">&lt;/&gt;</span>
+        </div>
+
+        <div class="editor-toolbar">
+          <span><span class="editor-dot"></span> HTML input</span>
+          <button type="button" class="text-button" id="load-sample">
+            Load sample
+          </button>
+        </div>
+
+        <label class="visually-hidden" for="html-input">HTML code to audit</label>
+        <textarea
+          id="html-input"
+          spellcheck="false"
+          placeholder="Paste your HTML here..."
+          aria-describedby="editor-help"
+        ></textarea>
+
+        <p class="helper-text" id="editor-help">
+          Paste HTML markup, not a website URL. Your snippet is processed in your browser.
+        </p>
+
+        <div class="editor-actions">
+          <button type="button" class="secondary-button" id="clear-html">
+            Clear
+          </button>
+          <button type="button" class="primary-button" id="run-audit">
+            <span aria-hidden="true">⌕</span> Run accessibility audit
+          </button>
+        </div>
+        <p class="message" id="audit-message" role="status" aria-live="polite"></p>
+      </div>
+
+      <aside class="panel guide-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="section-kicker">QUICK GUIDE</p>
+            <h2>What we check</h2>
+          </div>
+          <span class="heading-symbol" aria-hidden="true">✓</span>
+        </div>
+
+        <div class="guide-item">
+          <span class="guide-icon purple" aria-hidden="true">▧</span>
+          <div>
+            <h3>Image alternatives</h3>
+            <p>Find images missing an alt attribute.</p>
+          </div>
+        </div>
+
+        <div class="guide-item">
+          <span class="guide-icon blue" aria-hidden="true">⌨</span>
+          <div>
+            <h3>Form labels</h3>
+            <p>Find controls without a detectable accessible label.</p>
+          </div>
+        </div>
+
+        <div class="guide-item">
+          <span class="guide-icon orange" aria-hidden="true">↗</span>
+          <div>
+            <h3>Accessible names</h3>
+            <p>Check buttons and links for names.</p>
+          </div>
+        </div>
+
+        <div class="guide-item">
+          <span class="guide-icon green" aria-hidden="true">≡</span>
+          <div>
+            <h3>Document structure</h3>
+            <p>Check language, heading order, and duplicate IDs.</p>
+          </div>
+        </div>
+
+        <div class="guide-note">
+          <strong>Remember</strong>
+          <p>Automated checks cannot identify every accessibility issue. Always review your page manually.</p>
+        </div>
+      </aside>
+    </section>
+
+    <section class="results-section" id="results">
+      <div class="section-title-row">
+        <div>
+          <p class="section-kicker">STEP 02</p>
+          <h2>Audit results</h2>
+          <p class="muted">Issues found in your submitted HTML snippet.</p>
+        </div>
+        <button type="button" class="secondary-button" id="download-report" disabled>
+          ↓ Export report
+        </button>
+      </div>
+
+      <div class="stats-grid" aria-label="Audit summary">
+        <article class="stat-card">
+          <span class="stat-label">Issues found</span>
+          <strong id="total-issues">—</strong>
+          <span class="stat-foot">Potential problems</span>
+        </article>
+        <article class="stat-card">
+          <span class="stat-label">Errors</span>
+          <strong id="error-count" class="error-text">—</strong>
+          <span class="stat-foot">Review first</span>
+        </article>
+        <article class="stat-card">
+          <span class="stat-label">Warnings</span>
+          <strong id="warning-count" class="warning-text">—</strong>
+          <span class="stat-foot">Check manually</span>
+        </article>
+        <article class="stat-card">
+          <span class="stat-label">Checks passed</span>
+          <strong id="passed-count" class="success-text">—</strong>
+          <span class="stat-foot">Checks with no issue detected</span>
+        </article>
+      </div>
+
+      <div class="panel issues-panel">
+        <div class="issues-toolbar">
+          <h3>Findings <span id="findings-count">0</span></h3>
+          <label class="filter-label" for="severity-filter">Filter</label>
+          <select id="severity-filter">
+            <option value="all">All findings</option>
+            <option value="error">Errors</option>
+            <option value="warning">Warnings</option>
+            <option value="info">Information</option>
+          </select>
+        </div>
+
+        <div id="issues-list" class="issues-list" aria-live="polite">
+          <div class="empty-results">
+            <span class="empty-symbol" aria-hidden="true">⌕</span>
+            <h3>Your results will appear here</h3>
+            <p>Load the sample HTML or paste your own snippet, then run the audit.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel contrast-panel" id="contrast">
+      <div class="panel-heading">
+        <div>
+          <p class="section-kicker">BONUS TOOL</p>
+          <h2>Color contrast checker</h2>
+          <p class="muted">Test whether text and background colors have sufficient contrast.</p>
+        </div>
+        <span class="heading-symbol" aria-hidden="true">◐</span>
+      </div>
+
+      <div class="contrast-layout">
+        <div class="contrast-controls">
+          <div class="color-field">
+            <label for="foreground">Text color</label>
+            <div class="color-input">
+              <input type="color" id="foreground" value="#25233A">
+              <input type="text" id="foreground-hex" value="#25233A" maxlength="7" aria-label="Text color hexadecimal value">
+            </div>
+          </div>
+
+          <div class="color-field">
+            <label for="background">Background color</label>
+            <div class="color-input">
+              <input type="color" id="background" value="#FFFFFF">
+              <input type="text" id="background-hex" value="#FFFFFF" maxlength="7" aria-label="Background color hexadecimal value">
+            </div>
+          </div>
+
+          <button type="button" class="secondary-button" id="swap-colors">
+            ⇄ Swap colors
+          </button>
+          <p class="message" id="contrast-message" role="status" aria-live="polite"></p>
+        </div>
+
+        <div class="contrast-preview">
+          <div id="preview-card" class="preview-card">
+            <span class="preview-label">LIVE PREVIEW</span>
+            <h3>Readable by design.</h3>
+            <p>This sample text previews your selected text and background colors.</p>
+            <button type="button" id="preview-button">Example button</button>
+          </div>
+
+          <div class="contrast-score">
+            <div>
+              <span class="stat-label">Contrast ratio</span>
+              <strong id="contrast-ratio">—</strong>
+            </div>
+            <div id="contrast-status" class="contrast-badge">Checking...</div>
+          </div>
+
+          <div class="wcag-results">
+            <div class="wcag-row">
+              <span>Normal text (4.5:1)</span>
+              <strong id="normal-result">—</strong>
+            </div>
+            <div class="wcag-row">
+              <span>Large text (3:1)</span>
+              <strong id="large-result">—</strong>
+            </div>
+          </div>
+          <p class="helper-text">
+            WCAG AA thresholds for contrast only. Other accessibility requirements still apply.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="disclaimer">
+      <span aria-hidden="true">ⓘ</span>
+      <p>
+        <strong>Developer note:</strong> This tool performs a limited automated
+        review of pasted markup. It does not load external websites, execute
+        pasted scripts, or certify WCAG conformance. Keyboard, screen reader,
+        focus, and visual testing are still important.
+      </p>
+    </section>
+
+    <footer class="footer">
+      <a class="brand footer-brand" href="#">
+        <span class="brand-mark" aria-hidden="true">A</span>
+        <span>Accessi<span class="brand-accent">Check</span></span>
+      </a>
+      <p>Built with HTML, CSS & JavaScript</p>
+      <p>© <span id="year"></span> AccessiCheck</p>
+    </footer>
+  </main>
+</body>
+</html>
